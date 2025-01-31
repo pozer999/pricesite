@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot('YOUR_TELEGRAM_BOT_TOKEN', { polling: true });
+const bot = new TelegramBot('7975865683:AAEd1-_43PQtpYpns-3xy77W-L9S1hoEqFc', { polling: true });
 
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
