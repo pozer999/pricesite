@@ -1,6 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot('7975865683:AAEd1-_43PQtpYpns-3xy77W-L9S1hoEqFc', { polling: true });
-
+bot.deleteWebHook();
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
     landing: 5000,       // Лендинг
