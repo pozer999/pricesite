@@ -1,6 +1,24 @@
 const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot('EQCLfvbkTrdUJ1wfyNI9uOdcK30z1wbWWX060mrXBNwp2Tse', { polling: true });
-bot.deleteWebHook();
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+const token = 'EQCLfvbkTrdUJ1wfyNI9uOdcK30z1wbWWX060mrXBNwp2Tse';
+const bot = new TelegramBot(token);
+
+// Установите вебхук
+const webhookUrl = 'https://yourdomain.com/bot'; // Замените на ваш URL
+bot.setWebHook(`${webhookUrl}${token}`);
+
+// Middleware для обработки JSON
+app.use(express.json());
+
+// Обработчик входящих сообщений
+app.post(`/bot${token}`, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+});
+
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
     landing: 5000,       // Лендинг
@@ -25,17 +43,14 @@ const DISCOUNTS = {
 
 // Функция расчета стоимости
 function calculateCost(pages, type, features = []) {
-    // Базовая стоимость
     let cost = BASE_COST[type] * pages;
 
-    // Добавляем стоимость дополнительных функций
     features.forEach(feature => {
         if (ADDITIONAL_FEATURES[feature]) {
             cost += ADDITIONAL_FEATURES[feature];
         }
     });
 
-    // Применяем скидку
     for (const threshold in DISCOUNTS) {
         if (pages >= parseInt(threshold)) {
             cost *= (1 - DISCOUNTS[threshold]);
@@ -43,43 +58,80 @@ function calculateCost(pages, type, features = []) {
         }
     }
 
-    return Math.round(cost); // Округляем до целого числа
+    return Math.round(cost);
 }
 
 // Обработчик команды /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-    const message = `
-Привет! Я бот для расчета стоимости сайта.
-Введите данные в формате:
-<тип сайта> <количество страниц> <дополнительные функции>
-
-Пример:
-корпоративный 10 платеж мультиязычность
-Доступные типы сайтов: лендинг, корпоративный, ecommerce.
-Доступные функции: платеж, мультиязычность, адаптивный, админпанель.
-    `;
-    bot.sendMessage(chatId, message);
+    const options = {
+        reply_markup: {
+            keyboard: [['Лендинг', 'Корпоративный', 'Интернет-магазин']],
+            one_time_keyboard: true,
+        },
+    };
+    bot.sendMessage(chatId, 'Выберите тип сайта:', options);
 });
 
-// Обработчик ввода пользователя
+// Обработчик выбора типа сайта
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
 
-    // Парсим ввод пользователя
-    const parts = text.split(' ');
-    const type = parts[0];
-    const pages = parseInt(parts[1]);
-    const features = parts.slice(2);
+    if (['Лендинг', 'Корпоративный', 'Интернет-магазин'].includes(text)) {
+        // Сохраняем тип сайта
+        bot.sendMessage(chatId, 'Введите количество страниц:');
+        bot.once('message', (msg) => {
+            const pages = parseInt(msg.text);
 
-    // Проверяем корректность ввода
-    if (!BASE_COST[type] || isNaN(pages) || pages <= 0) {
-        bot.sendMessage(chatId, "Пожалуйста, введите корректные данные. Используйте формат: <тип сайта> <количество страниц> <дополнительные функции>");
-        return;
+            if (isNaN(pages) || pages <= 0) {
+                bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
+                return;
+            }
+
+            // Предложить выбор дополнительных функций
+            const options = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: 'Платежная система', callback_data: 'payment' }],
+                        [{ text: 'Мультиязычность', callback_data: 'multilingual' }],
+                        [{ text: 'Адаптивный дизайн', callback_data: 'responsive' }],
+                        [{ text: 'Админ-панель', callback_data: 'adminPanel' }],
+                        [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
+                    ],
+                },
+            };
+            bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
+
+            // Сохраняем данные для расчета
+            const userData = {
+                type: text.toLowerCase(),
+                pages: pages,
+                features: [],
+            };
+
+            // Обработчик выбора функций
+            bot.on('callback_query', (query) => {
+                const data = query.data;
+                const chatId = query.message.chat.id;
+
+                if (data === 'calculate') {
+                    // Рассчитать стоимость
+                    const cost = calculateCost(userData.pages, userData.type, userData.features);
+                    bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+                } else {
+                    // Добавить функцию в список
+                    userData.features.push(data);
+                    bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data}` });
+                }
+            });
+        });
+    } else {
+        bot.sendMessage(chatId, 'Пожалуйста, выберите тип сайта из предложенных вариантов.');
     }
+});
 
-    // Рассчитываем стоимость
-    const cost = calculateCost(pages, type, features);
-    bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+// Запуск сервера
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
