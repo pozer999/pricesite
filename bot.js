@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const bot = new TelegramBot('7975865683:AAEd1-_43PQtpYpns-3xy77W-L9S1hoEqFc', { polling: true });
+const bot = new TelegramBot('EQCLfvbkTrdUJ1wfyNI9uOdcK30z1wbWWX060mrXBNwp2Tse', { polling: true });
 bot.deleteWebHook();
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
