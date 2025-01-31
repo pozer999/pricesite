@@ -7,7 +7,7 @@ const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw';
 const bot = new TelegramBot(token);
 
 // Установите вебхук
-const webhookUrl = 'https://pricesite.onrender.com'; // Замените на ваш URL
+const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
 bot.setWebHook(`${webhookUrl}${token}`);
 
 // Middleware для обработки JSON
