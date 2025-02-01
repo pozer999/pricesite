@@ -1,5 +1,3 @@
-// 7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw
-// https://pricesite.onrender.com/bot
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const app = express();
