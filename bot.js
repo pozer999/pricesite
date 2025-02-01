@@ -1,30 +1,32 @@
+// 7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw
+// https://pricesite.onrender.com/bot
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw';
-const bot = new TelegramBot(token); 
+const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw'; // Замените на ваш токен
+const bot = new TelegramBot(token);
 
 // Установите вебхук
 const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
-
 bot.setWebHook(`${webhookUrl}${token}`);
 
 // Middleware для обработки JSON
 app.use(express.json());
-
-// Обработчик входящих сообщений
-app.post(`/bot${token}`, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-});
 
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
     landing: 5000,       // Лендинг
     corporate: 10000,    // Корпоративный сайт
     ecommerce: 20000,    // Интернет-магазин
+};
+
+// Сопоставление русских названий с английскими ключами
+const TYPE_MAPPING = {
+    'лендинг': 'landing',
+    'корпоративный': 'corporate',
+    'интернет-магазин': 'ecommerce',
 };
 
 // Дополнительные функции и их стоимость
@@ -44,22 +46,30 @@ const DISCOUNTS = {
 
 // Функция расчета стоимости
 function calculateCost(pages, type, features = []) {
+    // Проверка, что pages — число
     if (isNaN(pages) || pages <= 0) {
         throw new Error('Количество страниц должно быть положительным числом.');
     }
 
+    // Преобразуем тип сайта в английский ключ
+    const englishType = TYPE_MAPPING[type.toLowerCase()];
+
     // Проверка, что тип сайта существует
-    if (!BASE_COST[type]) {
+    if (!englishType || !BASE_COST[englishType]) {
         throw new Error('Неверный тип сайта.');
     }
-    let cost = BASE_COST[type] * pages;
 
+    // Базовая стоимость
+    let cost = BASE_COST[englishType] * pages;
+
+    // Добавляем стоимость дополнительных функций
     features.forEach(feature => {
         if (ADDITIONAL_FEATURES[feature]) {
             cost += ADDITIONAL_FEATURES[feature];
         }
     });
 
+    // Применяем скидку
     for (const threshold in DISCOUNTS) {
         if (pages >= parseInt(threshold)) {
             cost *= (1 - DISCOUNTS[threshold]);
@@ -67,7 +77,7 @@ function calculateCost(pages, type, features = []) {
         }
     }
 
-    return Math.round(cost);
+    return Math.round(cost); // Округляем до целого числа
 }
 
 // Обработчик команды /start
@@ -125,9 +135,13 @@ bot.on('message', (msg) => {
                 const chatId = query.message.chat.id;
 
                 if (data === 'calculate') {
-                    // Рассчитать стоимость
-                    const cost = calculateCost(userData.pages, userData.type, userData.features);
-                    bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+                    try {
+                        // Рассчитать стоимость
+                        const cost = calculateCost(userData.pages, userData.type, userData.features);
+                        bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+                    } catch (error) {
+                        bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+                    }
                 } else {
                     // Добавить функцию в список
                     userData.features.push(data);
