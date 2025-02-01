@@ -75,7 +75,7 @@ bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const options = {
         reply_markup: {
-            keyboard: [['Лендинг', 'Корпоративный', 'Интернет-магазин']],
+            keyboard: [['landing', 'corporate', 'ecommerce']],
             one_time_keyboard: true,
         },
     };
