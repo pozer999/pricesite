@@ -86,6 +86,7 @@ bot.onText(/\/start/, (msg) => {
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
+    console.log('text', text);
 
     if (['landing', 'corporate', 'ecommerce'].includes(text)) {
         // Сохраняем тип сайта
