@@ -87,7 +87,7 @@ bot.on('message', (msg) => {
     const chatId = msg.chat.id;
     const text = msg.text;
 
-    if (['Лендинг', 'Корпоративный', 'Интернет-магазин'].includes(text)) {
+    if (['landing', 'corporate', 'ecommerce'].includes(text)) {
         // Сохраняем тип сайта
         bot.sendMessage(chatId, 'Введите количество страниц:');
         bot.once('message', (msg) => {
