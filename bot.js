@@ -8,6 +8,7 @@ const bot = new TelegramBot(token);
 
 // Установите вебхук
 const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
+
 bot.setWebHook(`${webhookUrl}${token}`);
 
 // Middleware для обработки JSON
@@ -43,6 +44,14 @@ const DISCOUNTS = {
 
 // Функция расчета стоимости
 function calculateCost(pages, type, features = []) {
+    if (isNaN(pages) || pages <= 0) {
+        throw new Error('Количество страниц должно быть положительным числом.');
+    }
+
+    // Проверка, что тип сайта существует
+    if (!BASE_COST[type]) {
+        throw new Error('Неверный тип сайта.');
+    }
     let cost = BASE_COST[type] * pages;
 
     features.forEach(feature => {
