@@ -83,7 +83,6 @@ bot.onText(/\/start/, (msg) => {
                 [{ text: 'Лендинг', callback_data: 'landing' }],
                 [{ text: 'Корпоративный', callback_data: 'corporate' }],
                 [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
-                [{ text: 'Выбрал', callback_data: 'selected' }],
             ],
         },
     };
@@ -95,7 +94,6 @@ bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
     const text = query.data;
     console.log('Выбор типа сайта: ', text);
-    if (text === 'selected') {
 
     if (['landing', 'corporate', 'ecommerce'].includes(text)) {
         // Сохраняем тип сайта
@@ -148,7 +146,7 @@ bot.on('callback_query', (query) => {
                 }
             });
         });
-    }} else {
+    } else {
         bot.sendMessage(chatId, 'Пожалуйста, выберите тип сайта из предложенных вариантов.');
     }
 });
