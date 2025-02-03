@@ -3,11 +3,11 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const token = process.env.TOKEN;
+const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw';
 const bot = new TelegramBot(token); 
 
 // Установите вебхук
-const webhookUrl = process.env.WEBHOOKURL; // Замените на ваш URL
+const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
 
 bot.setWebHook(`${webhookUrl}${token}`);
 
