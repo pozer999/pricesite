@@ -133,8 +133,34 @@ bot.on('callback_query', (query) => {
             try {
                 const cost = calculateCost(pages, type, features);
                 bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+                    // Создаем inline-клавиатуру для выбора типа сайта
+    const options = {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'Лендинг', callback_data: 'landing' }],
+                [{ text: 'Корпоративный', callback_data: 'corporate' }],
+                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+            ],
+        },
+    };
+
+    // Отправляем сообщение с inline-клавиатурой
+    bot.sendMessage(chatId, 'Выберите тип сайта:', options);
             } catch (error) {
                 bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+                    // Создаем inline-клавиатуру для выбора типа сайта
+    const options = {
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'Лендинг', callback_data: 'landing' }],
+                [{ text: 'Корпоративный', callback_data: 'corporate' }],
+                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+            ],
+        },
+    };
+
+    // Отправляем сообщение с inline-клавиатурой
+    bot.sendMessage(chatId, 'Выберите тип сайта:', options);
             }
 
             // Очищаем состояние пользователя
