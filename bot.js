@@ -90,9 +90,9 @@ bot.onText(/\/start/, (msg) => {
 });
 
 // Обработчик выбора типа сайта
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const text = msg.text;
+bot.on('callback_query', (query) => {
+    const chatId = query.message.chat.id;
+    const text = query.data;;
     console.log('text', text);
 
     if (['landing', 'corporate', 'ecommerce'].includes(text)) {
