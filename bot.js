@@ -173,6 +173,18 @@ bot.on('message', (msg) => {
             bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
         } else {
             bot.sendMessage(chatId, 'Пожалуйста, сначала выберите тип сайта.');
+            const options = {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: 'Лендинг', callback_data: 'landing' }],
+                        [{ text: 'Корпоративный', callback_data: 'corporate' }],
+                        [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+                    ],
+                },
+            };
+        
+            // Отправляем сообщение с inline-клавиатурой
+            bot.sendMessage(chatId, 'Выберите тип сайта:', options);
         }
     } else {
         bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
