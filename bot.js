@@ -84,6 +84,7 @@ bot.onText(/\/start/, (msg) => {
                 [{ text: 'Корпоративный', callback_data: 'corporate' }],
                 [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
             ],
+            one_time_keyboard: true,
         },
     };
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
