@@ -72,11 +72,8 @@ function calculateCost(pages, type, features = []) {
 // Глобальный объект для хранения состояния пользователя
 const userState = {};
 
-// Обработчик команды /start
-bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-
-    // Создаем inline-клавиатуру для выбора типа сайта
+// Функция для отправки inline-клавиатуры с выбором типа сайта
+function sendTypeSelection(chatId) {
     const options = {
         reply_markup: {
             inline_keyboard: [
@@ -89,6 +86,12 @@ bot.onText(/\/start/, (msg) => {
 
     // Отправляем сообщение с inline-клавиатурой
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
+}
+
+// Обработчик команды /start
+bot.onText(/\/start/, (msg) => {
+    const chatId = msg.chat.id;
+    sendTypeSelection(chatId);
 });
 
 // Обработчик всех inline-кнопок
@@ -133,41 +136,33 @@ bot.on('callback_query', (query) => {
             try {
                 const cost = calculateCost(pages, type, features);
                 bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
-                    // Создаем inline-клавиатуру для выбора типа сайта
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'Лендинг', callback_data: 'landing' }],
-                [{ text: 'Корпоративный', callback_data: 'corporate' }],
-                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
-            ],
-        },
-    };
 
-    // Отправляем сообщение с inline-клавиатурой
-    bot.sendMessage(chatId, 'Выберите тип сайта:', options);
+                // Предложить рассчитать снова
+                const options = {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Рассчитать снова', callback_data: 'restart' }],
+                        ],
+                    },
+                };
+                bot.sendMessage(chatId, 'Хотите рассчитать стоимость еще раз?', options);
             } catch (error) {
                 bot.sendMessage(chatId, `Ошибка: ${error.message}`);
-                    // Создаем inline-клавиатуру для выбора типа сайта
-    const options = {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'Лендинг', callback_data: 'landing' }],
-                [{ text: 'Корпоративный', callback_data: 'corporate' }],
-                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
-            ],
-        },
-    };
-
-    // Отправляем сообщение с inline-клавиатурой
-    bot.sendMessage(chatId, 'Выберите тип сайта:', options);
+                sendTypeSelection(chatId); // Предложить выбрать тип сайта снова
             }
 
             // Очищаем состояние пользователя
             delete userState[chatId];
         } else {
             bot.sendMessage(chatId, 'Пожалуйста, сначала выберите тип сайта.');
+            sendTypeSelection(chatId); // Предложить выбрать тип сайта снова
         }
+        bot.answerCallbackQuery(query.id);
+    }
+
+    // Если пользователь нажимает "Рассчитать снова"
+    else if (data === 'restart') {
+        sendTypeSelection(chatId); // Предложить выбрать тип сайта снова
         bot.answerCallbackQuery(query.id);
     }
 });
@@ -199,18 +194,7 @@ bot.on('message', (msg) => {
             bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
         } else {
             bot.sendMessage(chatId, 'Пожалуйста, сначала выберите тип сайта.');
-            const options = {
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'Лендинг', callback_data: 'landing' }],
-                        [{ text: 'Корпоративный', callback_data: 'corporate' }],
-                        [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
-                    ],
-                },
-            };
-        
-            // Отправляем сообщение с inline-клавиатурой
-            bot.sendMessage(chatId, 'Выберите тип сайта:', options);
+            sendTypeSelection(chatId); // Предложить выбрать тип сайта снова
         }
     } else {
         bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
