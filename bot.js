@@ -101,6 +101,7 @@ bot.on('callback_query', (query) => {
         bot.sendMessage(chatId, 'Введите количество страниц:');
         bot.once('message', (msg) => {
             const pages = parseInt(msg.text);
+            console.log("pages: ", pages);
 
             if (isNaN(pages) || pages <= 0) {
                 bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
@@ -127,6 +128,7 @@ bot.on('callback_query', (query) => {
                 pages: pages,
                 features: [],
             };
+            console.log("userData: ", userData);
 
             // Обработчик выбора функций
             bot.on('callback_query', (query) => {
