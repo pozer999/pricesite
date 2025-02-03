@@ -95,6 +95,7 @@ bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
     const text = query.data;
     console.log('Выбор типа сайта: ', text);
+    if (text === 'selected') {
 
     if (['landing', 'corporate', 'ecommerce'].includes(text)) {
         // Сохраняем тип сайта
@@ -147,7 +148,7 @@ bot.on('callback_query', (query) => {
                 }
             });
         });
-    } else {
+    }} else {
         bot.sendMessage(chatId, 'Пожалуйста, выберите тип сайта из предложенных вариантов.');
     }
 });
