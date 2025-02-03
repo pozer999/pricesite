@@ -74,9 +74,16 @@ function calculateCost(pages, type, features = []) {
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const options = {
+        // reply_markup: {
+        //     keyboard: [['landing', 'corporate', 'ecommerce']],
+        //     one_time_keyboard: true,
+        // },
         reply_markup: {
-            keyboard: [['landing', 'corporate', 'ecommerce']],
-            one_time_keyboard: true,
+            inline_keyboard: [
+                [{ text: 'Лендинг', callback_data: 'landing' }],
+                [{ text: 'Корпоративный', callback_data: 'corporate' }],
+                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+            ],
         },
     };
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
