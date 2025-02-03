@@ -3,11 +3,11 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw';
+const token = process.env.TOKEN;
 const bot = new TelegramBot(token); 
 
 // Установите вебхук
-const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
+const webhookUrl = process.env.WEBHOOKURL; // Замените на ваш URL
 
 bot.setWebHook(`${webhookUrl}${token}`);
 
@@ -83,6 +83,7 @@ bot.onText(/\/start/, (msg) => {
                 [{ text: 'Лендинг', callback_data: 'landing' }],
                 [{ text: 'Корпоративный', callback_data: 'corporate' }],
                 [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+                [{ text: 'Выбрал', callback_data: 'selected' }],
             ],
         },
     };
@@ -92,8 +93,8 @@ bot.onText(/\/start/, (msg) => {
 // Обработчик выбора типа сайта
 bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
-    const text = query.data;;
-    console.log('text', text);
+    const text = query.data;
+    console.log('Выбор типа сайта: ', text);
 
     if (['landing', 'corporate', 'ecommerce'].includes(text)) {
         // Сохраняем тип сайта
@@ -131,6 +132,7 @@ bot.on('callback_query', (query) => {
             bot.on('callback_query', (query) => {
                 const data = query.data;
                 const chatId = query.message.chat.id;
+                console.log('Выбор доп/возможностей: ', data);
 
                 if (data === 'calculate') {
                     // Рассчитать стоимость
