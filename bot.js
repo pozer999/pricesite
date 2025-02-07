@@ -117,7 +117,7 @@ bot.on('callback_query', (query) => {
     }
 
     // Если пользователь выбирает дополнительные функции
-    else if (['payment', 'multilingual', 'responsive', 'adminPanel'].includes(data)) {
+    else if (['form', 'gallery', 'multi', 'seo', 'analitic', 'table', 'popup', 'map'].includes(data)) {
         // Добавляем функцию в список
         if (userState[chatId]) {
             userState[chatId].features.push(data);
