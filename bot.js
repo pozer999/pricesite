@@ -97,6 +97,26 @@ bot.onText(/\/start/, (msg) => {
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
 });
 
+bot.on('callback_query', (query) => {
+    const data = query.data;
+    const chatId = query.message.chat.id;
+
+    if (data === 'calculate') {
+        try {
+            // Рассчитать стоимость
+            const cost = calculateCost(userData.pages, userData.type, userData.features);
+            bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+        } catch (error) {
+            console.log("Возникла ошибка: ", error);
+            bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+        }
+    } else {
+        // Добавить функцию в список
+        userData.features.push(data);
+        bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data} `});
+    }
+});
+
 // Обработчик выбора типа сайта
 bot.on('message', (msg) => {
     const chatId = msg.chat.id;
@@ -177,23 +197,23 @@ bot.on('message', (msg) => {
                 }
             });
             
-            bot.on('callback_query', (query) => {
-                const data = query.data;
-                const chatId = query.message.chat.id;
+            // bot.on('callback_query', (query) => {
+            //     const data = query.data;
+            //     const chatId = query.message.chat.id;
             
-                if (data === 'calculate') {
-                    try {
-                        const cost = calculateCost(userData[chatId].pages, userData[chatId].type, userData[chatId].features);
-                        bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
-                    } catch (error) {
-                        console.log("Возникла ошибка: ", error);
-                        bot.sendMessage(chatId, `Ошибка: ${error.message}`);
-                    }
-                } else {
-                    userData[chatId].features.push(data);
-                    bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data} `});
-                }
-            });
+            //     if (data === 'calculate') {
+            //         try {
+            //             const cost = calculateCost(userData[chatId].pages, userData[chatId].type, userData[chatId].features);
+            //             bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+            //         } catch (error) {
+            //             console.log("Возникла ошибка: ", error);
+            //             bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+            //         }
+            //     } else {
+            //         userData[chatId].features.push(data);
+            //         bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data} `});
+            //     }
+            // });
         });
     } else {
         console.log("Пожалуйста, выберите тип сайта из предложенных вариантов.");
