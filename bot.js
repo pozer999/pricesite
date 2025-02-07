@@ -50,6 +50,7 @@ const DISCOUNTS = {
 function calculateCost(pages, type, features = []) {
     // Проверка, что pages — число
     if (isNaN(pages) || pages <= 0) {
+        console.log('Количество страниц должно быть положительным числом');
         throw new Error('Количество страниц должно быть положительным числом.');
     }
 
@@ -58,6 +59,7 @@ function calculateCost(pages, type, features = []) {
 
     // Проверка, что тип сайта существует
     if (!englishType || !BASE_COST[englishType]) {
+        console.log('Неверный тип сайта');
         throw new Error('Неверный тип сайта.');
     }
 
@@ -91,6 +93,7 @@ bot.onText(/\/start/, (msg) => {
             one_time_keyboard: true,
         },
     };
+    console.log("Тип сайта выбран: ", options);
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
 });
 
@@ -104,6 +107,7 @@ bot.on('message', (msg) => {
         bot.sendMessage(chatId, 'Введите количество страниц:');
         bot.once('message', (msg) => {
             const pages = parseInt(msg.text);
+            console.log("Количество страниц выбрано: ", pages);
 
             if (isNaN(pages) || pages <= 0) {
                 bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
@@ -126,6 +130,8 @@ bot.on('message', (msg) => {
                     ],
                 },
             };
+            console.log("Доп.функции выбраны: ", options);
+
             bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
 
             // Сохраняем данные для расчета
@@ -134,6 +140,8 @@ bot.on('message', (msg) => {
                 pages: pages,
                 features: [],
             };
+            console.log("userData: ", userData);
+
 
             // Обработчик выбора функций
             bot.on('callback_query', (query) => {
@@ -146,6 +154,7 @@ bot.on('message', (msg) => {
                         const cost = calculateCost(userData.pages, userData.type, userData.features);
                         bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
                     } catch (error) {
+                        console.log("Возникла ошибка: ", error);
                         bot.sendMessage(chatId, `Ошибка: ${error.message}`);
                     }
                 } else {
@@ -156,6 +165,7 @@ bot.on('message', (msg) => {
             });
         });
     } else {
+        console.log("Пожалуйста, выберите тип сайта из предложенных вариантов.");
         bot.sendMessage(chatId, 'Пожалуйста, выберите тип сайта из предложенных вариантов.');
     }
 });
