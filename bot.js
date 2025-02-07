@@ -115,7 +115,7 @@ bot.on('message', (msg) => {
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Форма обратной связи', callback_data: 'form' }],
-                        [{ text: 'Галлерея/карусель', callback_data: 'gallery' }],
+                        [{ text: 'Галерея/карусель', callback_data: 'gallery' }],
                         [{ text: 'Мультиязычность', callback_data: 'multi' }],
                         [{ text: 'SEO-оптимизация', callback_data: 'seo' }],
                         [{ text: 'Аналитика(Яндекс метрика)', callback_data: 'analitic' }],
