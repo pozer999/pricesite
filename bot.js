@@ -4,11 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 const token = '7975865683:AAH9iNXh5kQPtw1GtWA2Fa9Vr7SKoSnbJRw'; // Замените на ваш токен
-const bot = new TelegramBot(token);
-
-// Установите вебхук
-const webhookUrl = 'https://pricesite.onrender.com/bot'; // Замените на ваш URL
-bot.setWebHook(`${webhookUrl}${token}`);
+const bot = new TelegramBot(token, { polling: true }); // Используем polling для локальной разработки
 
 // Middleware для обработки JSON
 app.use(express.json());
@@ -48,32 +44,23 @@ const DISCOUNTS = {
 
 // Функция расчета стоимости
 function calculateCost(pages, type, features = []) {
-    // Проверка, что pages — число
     if (isNaN(pages) || pages <= 0) {
-        console.log('Количество страниц должно быть положительным числом');
         throw new Error('Количество страниц должно быть положительным числом.');
     }
 
-    // Преобразуем тип сайта в английский ключ
     const englishType = TYPE_MAPPING[type.toLowerCase()];
-
-    // Проверка, что тип сайта существует
     if (!englishType || !BASE_COST[englishType]) {
-        console.log('Неверный тип сайта');
         throw new Error('Неверный тип сайта.');
     }
 
-    // Базовая стоимость
     let cost = BASE_COST[englishType] * pages;
 
-    // Добавляем стоимость дополнительных функций
     features.forEach(feature => {
         if (ADDITIONAL_FEATURES[feature]) {
             cost += ADDITIONAL_FEATURES[feature];
         }
     });
 
-    // Применяем скидку
     for (const threshold in DISCOUNTS) {
         if (pages >= parseInt(threshold)) {
             cost *= (1 - DISCOUNTS[threshold]);
@@ -81,40 +68,22 @@ function calculateCost(pages, type, features = []) {
         }
     }
 
-    return Math.round(cost); // Округляем до целого числа
+    return Math.round(cost);
 }
+
+// Хранение данных пользователя
+const userData = {};
 
 // Обработчик команды /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
     const options = {
         reply_markup: {
-            keyboard: [['landing', 'corporate', 'ecommerce']],
+            keyboard: [['Лендинг', 'Корпоративный', 'Интернет-магазин']],
             one_time_keyboard: true,
         },
     };
-    console.log("Тип сайта выбран: ", options);
     bot.sendMessage(chatId, 'Выберите тип сайта:', options);
-});
-
-bot.on('callback_query', (query) => {
-    const data = query.data;
-    const chatId = query.message.chat.id;
-
-    if (data === 'calculate') {
-        try {
-            // Рассчитать стоимость
-            const cost = calculateCost(userData.pages, userData.type, userData.features);
-            bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
-        } catch (error) {
-            console.log("Возникла ошибка: ", error);
-            bot.sendMessage(chatId, `Ошибка: ${error.message}`);
-        }
-    } else {
-        // Добавить функцию в список
-        userData.features.push(data);
-        bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data} `});
-    }
 });
 
 // Обработчик выбора типа сайта
@@ -123,101 +92,50 @@ bot.on('message', (msg) => {
     const text = msg.text;
 
     if (['Лендинг', 'Корпоративный', 'Интернет-магазин'].includes(text)) {
-        // Сохраняем тип сайта
+        userData[chatId] = { type: text.toLowerCase(), features: [] };
         bot.sendMessage(chatId, 'Введите количество страниц:');
-        bot.once('message', (msg) => {
-            const pages = parseInt(msg.text);
-            console.log("Количество страниц выбрано: ", pages);
+    } else if (userData[chatId] && !userData[chatId].pages) {
+        const pages = parseInt(text);
+        if (isNaN(pages) || pages <= 0) {
+            bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
+            return;
+        }
+        userData[chatId].pages = pages;
 
-            if (isNaN(pages) || pages <= 0) {
-                bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
-                return;
-            }
+        const options = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: 'Форма обратной связи', callback_data: 'form' }],
+                    [{ text: 'Галерея/карусель', callback_data: 'gallery' }],
+                    [{ text: 'Мультиязычность', callback_data: 'multi' }],
+                    [{ text: 'SEO-оптимизация', callback_data: 'seo' }],
+                    [{ text: 'Аналитика(Яндекс метрика)', callback_data: 'analitic' }],
+                    [{ text: 'Таблица', callback_data: 'table' }],
+                    [{ text: 'Карта', callback_data: 'map' }],
+                    [{ text: 'Модальное окно', callback_data: 'popup' }],
+                    [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
+                ],
+            },
+        };
+        bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
+    }
+});
 
-            // Предложить выбор дополнительных функций
-            const options = {
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: 'Форма обратной связи', callback_data: 'form' }],
-                        [{ text: 'Галерея/карусель', callback_data: 'gallery' }],
-                        [{ text: 'Мультиязычность', callback_data: 'multi' }],
-                        [{ text: 'SEO-оптимизация', callback_data: 'seo' }],
-                        [{ text: 'Аналитика(Яндекс метрика)', callback_data: 'analitic' }],
-                        [{ text: 'Таблица', callback_data: 'table' }],
-                        [{ text: 'Карта', callback_data: 'map' }],
-                        [{ text: 'Модальное окно', callback_data: 'popup' }],
-                        [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
-                    ],
-                },
-            };
-            console.log("Доп.функции выбраны: ", options);
+// Обработчик callback_query
+bot.on('callback_query', (query) => {
+    const data = query.data;
+    const chatId = query.message.chat.id;
 
-            bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
-
-            // Сохраняем данные для расчета
-            const userData = {};
-
-            bot.on('message', (msg) => {
-                const chatId = msg.chat.id;
-                const text = msg.text;
-            
-                if (!userData[chatId]) {
-                    userData[chatId] = {};
-                }
-            
-                if (['Лендинг', 'Корпоративный', 'Интернет-магазин'].includes(text)) {
-                    userData[chatId].type = text.toLowerCase();
-                    bot.sendMessage(chatId, 'Введите количество страниц:');
-                    bot.once('message', (msg) => {
-                        const pages = parseInt(msg.text);
-                        if (isNaN(pages) || pages <= 0) {
-                            bot.sendMessage(chatId, 'Пожалуйста, введите корректное число страниц.');
-                            return;
-                        }
-                        userData[chatId].pages = pages;
-                        userData[chatId].features = [];
-            
-                        const options = {
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [{ text: 'Форма обратной связи', callback_data: 'form' }],
-                                    [{ text: 'Галерея/карусель', callback_data: 'gallery' }],
-                                    [{ text: 'Мультиязычность', callback_data: 'multi' }],
-                                    [{ text: 'SEO-оптимизация', callback_data: 'seo' }],
-                                    [{ text: 'Аналитика(Яндекс метрика)', callback_data: 'analitic' }],
-                                    [{ text: 'Таблица', callback_data: 'table' }],
-                                    [{ text: 'Карта', callback_data: 'map' }],
-                                    [{ text: 'Модальное окно', callback_data: 'popup' }],
-                                    [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
-                                ],
-                            },
-                        };
-                        bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
-                    });
-                }
-            });
-            
-            // bot.on('callback_query', (query) => {
-            //     const data = query.data;
-            //     const chatId = query.message.chat.id;
-            
-            //     if (data === 'calculate') {
-            //         try {
-            //             const cost = calculateCost(userData[chatId].pages, userData[chatId].type, userData[chatId].features);
-            //             bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
-            //         } catch (error) {
-            //             console.log("Возникла ошибка: ", error);
-            //             bot.sendMessage(chatId, `Ошибка: ${error.message}`);
-            //         }
-            //     } else {
-            //         userData[chatId].features.push(data);
-            //         bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data} `});
-            //     }
-            // });
-        });
+    if (data === 'calculate') {
+        try {
+            const cost = calculateCost(userData[chatId].pages, userData[chatId].type, userData[chatId].features);
+            bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей.`);
+        } catch (error) {
+            bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+        }
     } else {
-        console.log("Пожалуйста, выберите тип сайта из предложенных вариантов.");
-        bot.sendMessage(chatId, 'Пожалуйста, выберите тип сайта из предложенных вариантов.');
+        userData[chatId].features.push(data);
+        bot.answerCallbackQuery(query.id, { text: `Добавлено: ${data}` });
     }
 });
 
