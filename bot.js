@@ -21,9 +21,9 @@ app.post(`/bot${token}`, (req, res) => {
 
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
-    landing: 5000,       // Лендинг
-    corporate: 10000,    // Корпоративный сайт
-    ecommerce: 20000,    // Интернет-магазин
+    landing: 3000,       // Лендинг
+    corporate: 5000,    // Корпоративный сайт
+    ecommerce: 15000,    // Интернет-магазин
 };
 
 // Дополнительные функции и их стоимость
@@ -195,7 +195,7 @@ bot.on('message', (msg) => {
                         [{ text: 'Таблица', callback_data: 'table' }],
                         [{ text: 'Карта', callback_data: 'map' }],
                         [{ text: 'Модальное окно', callback_data: 'popup' }],
-
+                        [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
                     ],
                 },
             };
