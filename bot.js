@@ -113,7 +113,7 @@ bot.on('callback_query', (query) => {
         };
 
         // Запрашиваем количество страниц
-        bot.sendMessage(chatId, 'Введите количество страниц:\n СКИДКА\nОт 5 страниц: 5%\nОт 10 страниц: 10%\nОт 20 страниц: 15%');
+        bot.sendMessage(chatId, 'От 5 страниц: 5%\nОт 10 страниц: 10%\nОт 20 страниц: 15%\n<b>Введите количество страниц</b>');
         bot.answerCallbackQuery(query.id);
     }
 
