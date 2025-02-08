@@ -28,14 +28,15 @@ const BASE_COST = {
 
 // Дополнительные функции и их стоимость
 const ADDITIONAL_FEATURES = {
-    form: 2000,
-    gallery: 1000,
-    multi: 3000,
+    form: 1500,
+    gallery: 500,
+    multi: 1000,
     seo: 2000,
-    analitic:2000,
-    table: 2000,
-    map: 2000,
-    popup: 1000,
+    analitic: 700,
+    table: 1000,
+    map: 1000,
+    popup: 700,
+    video: 500,
 };
 
 // Скидки в зависимости от количества страниц
@@ -81,9 +82,9 @@ function sendTypeSelection(chatId) {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Лендинг', callback_data: 'landing' }],
-                [{ text: 'Корпоративный', callback_data: 'corporate' }],
-                [{ text: 'Интернет-магазин', callback_data: 'ecommerce' }],
+                [{ text: 'Лендинг | 3000 руб/стр', callback_data: 'landing' }],
+                [{ text: 'Корпоративный | 5000 руб/стр', callback_data: 'corporate' }],
+                [{ text: 'Интернет-магазин | 10000 руб/стр', callback_data: 'ecommerce' }],
             ],
         },
     };
@@ -117,7 +118,7 @@ bot.on('callback_query', (query) => {
     }
 
     // Если пользователь выбирает дополнительные функции
-    else if (['form', 'gallery', 'multi', 'seo', 'analitic', 'table', 'popup', 'map'].includes(data)) {
+    else if (['form', 'gallery', 'multi', 'seo', 'analitic', 'table', 'popup', 'map', 'video'].includes(data)) {
         // Добавляем функцию в список
         if (userState[chatId]) {
             userState[chatId].features.push(data);
@@ -139,7 +140,7 @@ bot.on('callback_query', (query) => {
             // Рассчитываем стоимость
             try {
                 const cost = calculateCost(pages, type, features);
-                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "corporate" ? "Корпоративный" : "Интернет магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: ${features}`);
+                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "corporate" ? "Корпоративный" : "Интернет-магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: ${features}`);
 
                 // Предложить рассчитать снова
                 const options = {
@@ -187,19 +188,20 @@ bot.on('message', (msg) => {
             const options = {
                 reply_markup: {
                     inline_keyboard: [
-                        [{ text: 'Форма обратной связи', callback_data: 'form' }],
-                        [{ text: 'Галлерея/карусель', callback_data: 'gallery' }],
-                        [{ text: 'Мультиязычность', callback_data: 'multi' }],
+                        [{ text: 'Форма обратной связи | 1500 руб/шт', callback_data: 'form' }],
+                        [{ text: 'Галерея/карусель | 500 руб/шт', callback_data: 'gallery' }],
+                        [{ text: 'Мультиязычность | 1000 руб/стр', callback_data: 'multi' }],
                         [{ text: 'SEO-оптимизация', callback_data: 'seo' }],
-                        [{ text: 'Аналитика(Яндекс метрика)', callback_data: 'analitic' }],
-                        [{ text: 'Таблица', callback_data: 'table' }],
-                        [{ text: 'Карта', callback_data: 'map' }],
-                        [{ text: 'Модальное окно', callback_data: 'popup' }],
+                        [{ text: 'Аналитика (Яндекс метрика) | 700 руб', callback_data: 'analitic' }],
+                        [{ text: 'Таблица | 1000 руб/шт', callback_data: 'table' }],
+                        [{ text: 'Карта | 1000 руб/шт', callback_data: 'map' }],
+                        [{ text: 'Модальное окно | 700 руб/шт', callback_data: 'popup' }],
+[{ text: 'Размещение видео | 500 руб/шт', callback_data: 'video' }],
                         [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
                     ],
                 },
             };
-            bot.sendMessage(chatId, 'Выберите дополнительные функции:', options);
+            bot.sendMessage(chatId, 'Выберите дополнительные функции:\nМожно выбрать несколько штук каждой функции нажимая несколько раз', options);
         } else {
             bot.sendMessage(chatId, 'Пожалуйста, сначала выберите тип сайта.');
             sendTypeSelection(chatId); // Предложить выбрать тип сайта снова
