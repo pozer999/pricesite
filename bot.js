@@ -143,7 +143,7 @@ bot.on('callback_query', (query) => {
             // Рассчитываем стоимость
             try {
                 const cost = calculateCost(pages, type, features);
-                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "corporate" ? "Корпоративный" : "Интернет-магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: \n-${features.join("\n -")}`);
+                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "corporate" ? "Корпоративный" : "Интернет-магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: \n -${features.join("\n -")}`);
                 // Предложить рассчитать снова
                 const options = {
                     reply_markup: {
