@@ -30,6 +30,8 @@ const BASE_COST = {
 const ADDITIONAL_FEATURES = {
     form: 1500,
     gallery: 500,
+    articale: 100,
+    queryAndSort: 2000,
     multi: 1000,
     seo: 300,
     analitic: 700,
@@ -191,6 +193,8 @@ bot.on('message', (msg) => {
                     inline_keyboard: [
                         [{ text: 'Форма обратной связи | 1500 руб/шт', callback_data: 'form' }],
                         [{ text: 'Галерея/карусель | 500 руб/шт', callback_data: 'gallery' }],
+[{ text: 'Страница статьи/новости/продукта | 100 руб/шт', callback_data: 'article' }],
+[{ text: 'Поиск и сортировка | 2000 руб/шт', callback_data: 'queryAndSort' }],
                         [{ text: 'Мультиязычность | 1000 руб/стр', callback_data: 'multi' }],
                         [{ text: 'SEO-оптимизация | 300 руб/стр', callback_data: 'seo' }],
                         [{ text: 'Аналитика (Яндекс метрика) | 700 руб', callback_data: 'analitic' }],
