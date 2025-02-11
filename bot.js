@@ -108,6 +108,11 @@ bot.onText(/\/start/, (msg) => {
     sendTypeSelection(chatId);
 });
 
+bot.onText('/help', (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId, 'heeeelp');
+});
+
 // Обработчик всех inline-кнопок
 bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
