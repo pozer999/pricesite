@@ -43,6 +43,7 @@ const ADDITIONAL_FEATURES = {
     map: 1000,
     popup: 700,
     video: 500,
+    logo: 1000, 
 };
 
 // Скидки в зависимости от количества страниц
@@ -127,7 +128,7 @@ bot.sendMessage(chatId, '1 СТРАНИЦА = 4 СЕКЦИИ\nЕсли секц�
     }
 
     // Если пользователь выбирает дополнительные функции
-    else if (['nav', 'footer', 'form', 'gallery', 'article', 'queryAndSort', 'multi', 'seo', 'analitic', 'table', 'popup', 'map', 'video'].includes(data)) {
+    else if (['nav', 'footer', 'form', 'gallery', 'article', 'queryAndSort', 'multi', 'seo', 'analitic', 'table', 'popup', 'map', 'video', 'logo'].includes(data)) {
         // Добавляем функцию в список
         if (userState[chatId]) {
             userState[chatId].features.push(data);
@@ -209,6 +210,7 @@ bot.on('message', (msg) => {
                         [{ text: 'Карта | 1000 руб/шт', callback_data: 'map' }],
                         [{ text: 'Модальное окно | 700 руб/шт', callback_data: 'popup' }],
 [{ text: 'Размещение видео | 500 руб/шт', callback_data: 'video' }],
+[{ text: 'Создание логотипа' | 1000 руб/шт', callback_data: 'logo' }],
                         [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
                     ],
                 },
