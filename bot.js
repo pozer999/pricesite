@@ -108,15 +108,6 @@ bot.onText(/\/start/, (msg) => {
     sendTypeSelection(chatId);
 });
 
-const HELPoptions = {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: '/help', callback_data: '/help' }],
-                        ],
-                    },
-                };
-                bot.sendMessage(chatId, '/help', HELPoptions);
-
 bot.onText('/\/help/', (msg) => {
     const chatId = msg.chat.id;
     bot.sendMessage(chatId, 'heeeelp');
