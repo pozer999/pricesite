@@ -210,7 +210,7 @@ bot.on('message', (msg) => {
                         [{ text: 'Карта | 1000 руб/шт', callback_data: 'map' }],
                         [{ text: 'Модальное окно | 700 руб/шт', callback_data: 'popup' }],
 [{ text: 'Размещение видео | 500 руб/шт', callback_data: 'video' }],
-[{ text: 'Создание логотипа' | 1000 руб/шт', callback_data: 'logo' }],
+[{ text: 'Создание логотипа | 1000 руб/шт', callback_data: 'logo' }],
                         [{ text: 'Рассчитать стоимость', callback_data: 'calculate' }],
                     ],
                 },
