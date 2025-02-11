@@ -21,7 +21,9 @@ app.post(`/bot${token}`, (req, res) => {
 
 // Базовая стоимость за страницу для разных типов сайтов
 const BASE_COST = {
-    landing: 3000,       // Лендинг
+    landing: 2000,       // Лендинг
+    catalog: 3000,       // Каталог
+    blog: 4000,         // Блог
     corporate: 5000,    // Корпоративный сайт
     ecommerce: 10000,    // Интернет-магазин
 };
@@ -86,7 +88,9 @@ function sendTypeSelection(chatId) {
     const options = {
         reply_markup: {
             inline_keyboard: [
-                [{ text: 'Лендинг | 3000 руб/стр', callback_data: 'landing' }],
+                [{ text: 'Лендинг | 2000 руб/стр', callback_data: 'landing' }],
+[{ text: 'Блог | 4000 руб/стр', callback_data: 'blog' }],
+[{ text: 'Каталог | 3000 руб/стр', callback_data: 'catalog' }],
                 [{ text: 'Корпоративный | 5000 руб/стр', callback_data: 'corporate' }],
                 [{ text: 'Интернет-магазин | 10000 руб/стр', callback_data: 'ecommerce' }],
             ],
@@ -109,7 +113,7 @@ bot.on('callback_query', (query) => {
     const data = query.data;
 
     // Если пользователь выбирает тип сайта
-    if (['landing', 'corporate', 'ecommerce'].includes(data)) {
+    if (['landing', 'blog', 'catalog', 'corporate', 'ecommerce'].includes(data)) {
         // Сохраняем тип сайта в состоянии пользователя
         userState[chatId] = {
             type: data,
@@ -145,7 +149,7 @@ bot.sendMessage(chatId, '1 СТРАНИЦА = 4 СЕКЦИИ\nЕсли секц�
             // Рассчитываем стоимость
             try {
                 const cost = calculateCost(pages, type, features);
-                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "corporate" ? "Корпоративный" : "Интернет-магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: ${features.length ? '\n •' : ''} ${features.join("\n • ")}`);
+                bot.sendMessage(chatId, `Стоимость сайта: ${cost} рублей. \nВы выбрали: \nТип сайта: ${type == "landing" ? "Лендинг" : type == "blog" ? 'Блог' : type == "catalog"? 'Каталог' : type == "corporate" ? "Корпоративный" : "Интернет-магазин"} \nКоличество страниц: ${pages}\nДополнительные функции: ${features.length ? '\n •' : ''} ${features.join("\n • ")}`);
                 // Предложить рассчитать снова
                 const options = {
                     reply_markup: {
