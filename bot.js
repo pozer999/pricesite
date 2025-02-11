@@ -28,6 +28,8 @@ const BASE_COST = {
 
 // Дополнительные функции и их стоимость
 const ADDITIONAL_FEATURES = {
+    nav: 300,
+    footer: 300,
     form: 1500,
     gallery: 500,
     articale: 100,
@@ -113,7 +115,7 @@ bot.on('callback_query', (query) => {
             type: data,
             features: [],
         };
-
+bot.sendMessage(chatId, '1 СТРАНИЦА = 4 СЕКЦИИ\nЕсли секций на одной странице больше 4, то добавляем еще страницу\nФутер не считаем');
         bot.sendMessage(chatId, 'Скидка за количество страниц: \nОт 5 страниц: 5%\nОт 10 страниц: 10%\nОт 20 страниц: 15%');
         // Запрашиваем количество страниц
         bot.sendMessage(chatId, 'Введите количество страниц:');
@@ -121,7 +123,7 @@ bot.on('callback_query', (query) => {
     }
 
     // Если пользователь выбирает дополнительные функции
-    else if (['form', 'gallery', 'article', 'queryAndSort', 'multi', 'seo', 'analitic', 'table', 'popup', 'map', 'video'].includes(data)) {
+    else if (['nav', 'footer', 'form', 'gallery', 'article', 'queryAndSort', 'multi', 'seo', 'analitic', 'table', 'popup', 'map', 'video'].includes(data)) {
         // Добавляем функцию в список
         if (userState[chatId]) {
             userState[chatId].features.push(data);
@@ -190,6 +192,8 @@ bot.on('message', (msg) => {
             const options = {
                 reply_markup: {
                     inline_keyboard: [
+     [{ text: 'Хедер с навигацией | 300 руб/шт', callback_data: 'nav' }],
+  [{ text: 'Футер | 300 руб/шт', callback_data: 'footer' }],
                         [{ text: 'Форма обратной связи | 1500 руб/шт', callback_data: 'form' }],
                         [{ text: 'Галерея/карусель | 500 руб/шт', callback_data: 'gallery' }],
 [{ text: 'Страница статьи/новости/продукта | 100 руб/шт', callback_data: 'article' }],
