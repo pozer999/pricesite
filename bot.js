@@ -127,7 +127,10 @@ bot.on('callback_query', (query) => {
     const data = query.data;
 
     // Если пользователь выбирает тип сайта
-    if (['landing', 'blog', 'catalog', 'corporate', 'ecommerce'].includes(data)) {
+    if (['landing', 'blog', 'catalog', 'corporate', 'ecommerce', 'help'].includes(data)) {
+if('help'.includes(data)){
+   sendTypeSelection(chatId);
+}
         // Сохраняем тип сайта в состоянии пользователя
         userState[chatId] = {
             type: data,
