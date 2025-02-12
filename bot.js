@@ -94,6 +94,7 @@ function sendTypeSelection(chatId) {
 [{ text: 'Каталог | 3000 руб/стр', callback_data: 'catalog' }],
                 [{ text: 'Корпоративный | 5000 руб/стр', callback_data: 'corporate' }],
                 [{ text: 'Интернет-магазин | 10000 руб/стр', callback_data: 'ecommerce' }],
+[{ text: '/help', callback_data: 'help' }],
             ],
         },
     };
@@ -108,7 +109,7 @@ bot.onText(/\/start/, (msg) => {
     sendTypeSelection(chatId);
 });
 
-bot.onText('/help', (msg) => {
+bot.onText('help', (msg) => {
     const chatId = msg.chat.id;
  bot.sendMessage(chatId, 
 `<code>Лендинг (Landing Page)</code>\nОписание: Одностраничный сайт, предназначенный для презентации продукта, услуги или акции. Часто используется для сбора контактных данных или продажи.\n\n` +
